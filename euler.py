@@ -40,7 +40,6 @@ def euler_adjacency_matrix(matrix):
         for end, value in enumerate(tempMatrix[start]):
             if value == 1:
                 if isValid(start, end):
-                    # print(f'{start} -> {end} ', end=" "),
                     if len(path) == 0 or path[len(path) - 1] != start:
                         path.append(start)
                     path.append(end)
@@ -50,3 +49,34 @@ def euler_adjacency_matrix(matrix):
 
     euler_adjacency_matrix_util(temp)
     return path
+
+
+def znajdz_cykl_eulera_skierowany(macierz_sasiedztwa):
+    n = len(macierz_sasiedztwa)
+    indegree = [0] * n
+    outdegree = [0] * n
+    cykl = []
+
+    # Obliczanie stopni wejściowych i wyjściowych dla każdego wierzchołka
+    for i in range(n):
+        for j in range(n):
+            indegree[i] += macierz_sasiedztwa[j][i]
+            outdegree[i] += macierz_sasiedztwa[i][j]
+
+    # Sprawdzanie warunku na istnienie cyklu Eulera
+    for i in range(n):
+        if indegree[i] != outdegree[i]:
+            return None  # Nie ma cyklu Eulera
+
+    def dfs(v):
+        while outdegree[v] != 0:
+            for u in range(n):
+                if macierz_sasiedztwa[v][u] > 0:
+                    outdegree[v] -= 1
+                    macierz_sasiedztwa[v][u] -= 1
+                    dfs(u)
+        cykl.append(v)
+
+    dfs(0)
+
+    return cykl[::-1]
